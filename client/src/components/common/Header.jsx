@@ -1,135 +1,87 @@
-import { useContext } from "react";
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
-import { userAuthorContextObj } from "../../contexts/UserAuthorContext";
-import { logo } from "../../assets/logo.png";
+import { useNavigate } from "react-router-dom";
+import { userAuthorContextObj } from "../../contexts/userAuthorContext.jsx";
+
+import "../../styles/Header.css"; 
 
 function Header() {
   const { signOut } = useClerk();
-  const { isSignedIn, user, isLoaded } = useUser();
-  const { currentUser, setCurrentUser } = useContext(userAuthorContextObj);
+  const { currUserAuthor, setCurrUserAuthor } = useContext(userAuthorContextObj);
   const navigate = useNavigate();
+  const { isSignedIn, user, isLoaded } = useUser();
 
-  async function handleSignout() {
+  async function handleSignOut() {
     await signOut();
-    setCurrentUser(null);
-    localStorage.clear();
+    setCurrUserAuthor(null);
     navigate("/");
   }
 
   return (
-    <div>
-      <nav
-        className="header d-flex justify-content-between align-items-center p-4 bg-gradient text-white "
-        style={{
-          background: "linear-gradient(135deg, #ff7e5f, #feb47b)",
-          margin: "20px",
-          borderRadius: "8px",
-        }}
-      >
-        {/* Logo Section */}
-        <div className="d-flex justify-content-center">
-          <Link to="/">
-            {logo}
-            <img
-              src={logo} // Replace with your logo URL
-              alt="Logo"
-              width="150px"
-              className="rounded"
-              style={{ border: "2px solid #fff" }}
-            />
-          </Link>
-        </div>
-
-        {/* Links or User Information Section */}
-        <ul className="d-flex justify-content-around align-items-center list-unstyled m-0">
-          {!isSignedIn ? (
-            <>
-              <li>
-                <Link
-                  to="/"
-                  className="link text-muted me-4 fs-5"
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="signin"
-                  className="link text-muted me-4 fs-5"
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                >
-                  Signin
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="signup"
-                  className="link text-muted me-4 fs-5"
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                >
-                  Signup
-                </Link>
-              </li>
-            </>
-          ) : (
-            <div className="user-button d-flex align-items-center">
-              <div style={{ position: "relative" }}>
-                <img
-                  src={user.imageUrl}
-                  width="40px"
-                  className="rounded-circle border border-2 border-light"
-                  alt="User Avatar"
-                />
-                <p
-                  className="role position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                  style={{ fontSize: "12px" }}
-                >
-                  {currentUser.role}
-                </p>
-              </div>
-              <div className="ms-2">
-                <p
-                  className="mb-0 text-white"
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                >
-                  {user.firstName}
-                </p>
-                <button
-                  className="btn btn-outline-light btn-sm mt-1"
-                  onClick={handleSignout}
-                  style={{
-                    background: "linear-gradient(45deg, #ff6347, #ff4500)", // Gradient background for the button
-                    color: "#fff", // White text for contrast
-                    border: "none", // Remove default border
-                    padding: "10px 20px", // Larger padding for the button
-                    borderRadius: "8px", // Rounded corners for a sleek design
-                    fontWeight: "bold", // Bold text for visibility
-                    boxShadow: "0 6px 10px rgba(0, 0, 0, 0.2)", // Stronger shadow for a floating effect
-                    transition: "all 0.3s ease", // Smooth transition for hover effect
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = "scale(1.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = "scale(1)";
-                  }}
-                >
-                  Signout
-                </button>
-              </div>
+    <header>
+      <nav className="navbar navbar-dark bg-dark header-navbar shadow-sm">
+        <div className="container d-flex justify-content-between align-items-center">
+          {/* Brand / Logo */}
+          <Link to="/" className="navbar-brand d-flex align-items-center">
+            <div className="brand-logo d-flex align-items-center justify-content-center me-2">
+              {/* You can replace this text with an actual logo image if you have one */}
+              <span>A</span>
             </div>
-          )}
-        </ul>
-      </nav>
+            <span className="brand-text">AuthorHub</span>
+          </Link>
 
-      {/* Content of the Page */}
-      <div style={{ backgroundColor: "#f0f0f0", padding: "20px" }}>
-        {/* Your other page content goes here */}
-      </div>
-    </div>
+          {/* Links / User section */}
+          <ul className="nav header-links mb-0 d-flex align-items-center">
+            {!isSignedIn ? (
+              <>
+                <li className="nav-item">
+                  <Link to="/" className="nav-link">
+                    Home
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/signin" className="nav-link">
+                    Sign In
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/signup" className="nav-link btn btn-outline-light ms-2 px-3">
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item">
+                <div className="d-flex align-items-center gap-3 user-info">
+                  <img
+                    className="user-image"
+                    src={user?.imageUrl}
+                    alt={user?.firstName || "User"}
+                  />
+                  <div className="d-flex flex-column">
+                    <span className="user-name">
+                      {user?.firstName} {user?.lastName}
+                    </span>
+                    {currUserAuthor && (
+                      <span className="user-role text-muted">
+                        {currUserAuthor.role || "Author"}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    className="btn btn-outline-light btn-sm"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </li>
+            )}
+          </ul>
+        </div>
+      </nav>
+    </header>
   );
 }
 

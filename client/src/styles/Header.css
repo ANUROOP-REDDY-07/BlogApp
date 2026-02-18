@@ -1,0 +1,102 @@
+/* Overall navbar */
+.header-navbar {
+  padding-block: 0.6rem;
+  background: linear-gradient(90deg, #141e30, #243b55);
+}
+
+/* Brand / Logo */
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.brand-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+/* Links */
+.header-links .nav-link {
+  color: #f1f1f1;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.header-links .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* Make Sign Up look more like a call-to-action */
+.header-links .btn-outline-light {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* User section */
+.user-info {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.user-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  line-height: 1.1;
+}
+
+/* Small screens */
+@media (max-width: 576px) {
+  .header-navbar .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header-links {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.25rem;
+  }
+
+  .user-info {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .user-name {
+    max-width: 120px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}

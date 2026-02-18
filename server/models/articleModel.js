@@ -1,70 +1,79 @@
 const mongoose=require('mongoose')
-const authorDataSchema = new mongoose.Schema({
-    nameOfAuthor: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    profileImageUrl: {
-        type: String,
 
-    }
-}, { "strict": "throw" })
 
 //create user comment schema
-const userCommentSchema = new mongoose.Schema({
-    nameOfUser: {
-        type: String,
-        required: true
+const usercommentSchema=new mongoose.Schema({
+    nameOfUser:{
+        type:String,
+        required:true,
     },
-    comment: {
-        type: String,
-        required: true
+    comment:{
+        type:String,
+        required:true,
     }
-}, { "strict": "throw" })
+},{"strict":"throw"})
 
-//create Article schema
-const articleSchema = new mongoose.Schema({
-    authorData: authorDataSchema,
 
-    articleId: {
-        type: String,
-        required: true
+//create author schema
+
+const authorDataSchema=new mongoose.Schema({
+    name:{
+        type:String,
+        required:true,
     },
-    title: {
-        type: String,
-        required: true
+    email:{
+        type:String,
+        required:true,
     },
-    category: {
-        type: String,
-        required: true
-    },
-    content: {
-        type: String,
-        required: true
-    },
-    dateOfCreation: {
-        type: String,
-        required: true
-    },
-    dateOfModification: {
-        type: String,
-        required: true
-    },
-    comments: [userCommentSchema],
-    isArticleActive: {
-        type: Boolean,
-        required: true
+    profileImageUrl:{
+        type:String,
     }
 
+},{"strict":"throw"})
 
+//create article schema
+const articleSchema=new mongoose.Schema({
+      authorData: authorDataSchema,
+      
+      articleId:{
+        type:String,
+        required:true,
+      },
+      title:{
+        type:String,
+        required:true,
+      },
+      category:{
+        type:String,
+        required:true,
+      },
+      content:{
+        type:String,
+        required:true,
+      },
+      dateOfCreation:{
+        type:String,
+        required:true,
+      },
+      dateOfModification:{
+        type:String,
+        required:true,
+      },
+      comments:[usercommentSchema],
 
-}, { "strict": "throw" })
+      isArticleActive:{
+        type:Boolean,
+        required:true,
+      }
 
+},{"strict":"throw"})
 
- const Article=mongoose.model('article',articleSchema);
+//create model
+const Article=mongoose.model('article',articleSchema)
 
- module.exports=Article;
+//remove unique indexes if they exist
+Article.collection.dropIndex("articleId_1").catch(() => {});
+
+//export model
+
+module.exports=Article

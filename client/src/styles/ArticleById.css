@@ -1,0 +1,76 @@
+.article-detail-page {
+  background-color: #f5f7fb;
+  min-height: calc(100vh - 140px); /* leave space for header/footer */
+}
+
+/* Loading / error */
+.article-detail-state {
+  min-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Back button */
+.back-btn {
+  border-radius: 999px;
+  padding-inline: 1.1rem;
+  font-size: 0.85rem;
+}
+
+/* Card */
+.article-detail-card {
+  border-radius: 1.2rem;
+  background-color: #ffffff;
+}
+
+/* Author section */
+.author-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(37, 99, 235, 0.5);
+}
+
+.article-category-badge {
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.7rem;
+}
+
+/* Title */
+.article-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Content */
+.article-content {
+  margin-top: 1.5rem;
+}
+
+.article-body-text {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #374151;
+  white-space: pre-line; /* preserve line breaks if present */
+}
+
+/* Mobile tweaks */
+@media (max-width: 576px) {
+  .article-detail-card {
+    border-radius: 1rem;
+  }
+
+  .article-title {
+    font-size: 1.4rem;
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+  }
+}

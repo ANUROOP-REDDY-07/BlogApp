@@ -1,41 +1,40 @@
-import { StrictMode } from 'react'
-import 'bootstrap/dist/css/bootstrap.css';
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
-import Rootlayout from './components/Rootlayout.jsx';
-import Home from './components/common/Home.jsx';
-import Signin from './components/common/Signin.jsx';
-import Signup from './components/common/Signup.jsx';
-import UserProfile from './components/user/UserProfile.jsx';
-import AuthorProfile from './components/author/AuthorProfile.jsx';
-import Articles from './components/common/Articles.jsx';
-import ArticleByID from './components/common/ArticleByID.jsx';
-import PostArticle from './components/author/PostArticle.jsx';
-import UserAuthorContext from './contexts/UserAuthorContext.jsx';
-import AdminProfile from './components/admin/AdminProfile.jsx';
-import UserList from './components/admin/UserList.jsx';
-
-import AdminContext from './contexts/AdminContext.jsx';
-
-
+import { StrictMode } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import RootLayout from "./components/RootLayout.jsx";
+import Home from "./components/common/Home.jsx";
+import Signin from "./components/common/Signin.jsx";
+import Signup from "./components/common/Signup.jsx";
+import UserProfile from "./components/user/UserProfile.jsx";
+import AuthorProfile from "./components/author/AuthorProfile.jsx";
+import Articles from "./components/common/Articles.jsx";
+import ArticleById from "./components/common/ArticleById.jsx";
+import PostArticle from "./components/author/PostArticle.jsx";
+import { UserAuthorProvider } from "./contexts/userAuthorContext.jsx"; // ✅ Correct import (named export + capitalized)
 
 const browserRouterObj = createBrowserRouter([
   {
     path: "/",
-    element: <Rootlayout />,
+    element: <RootLayout />,
     children: [
       {
-        path: "",
-        element: <Home />
+        index: true,
+        element: <Home />,
       },
       {
         path: "signin",
-        element: <Signin />
+        element: <Signin />,
       },
       {
-        path: 'signup',
-        element: <Signup />
+        path: "signup",
+        element: <Signup />,
       },
       {
         path: "user-profile/:email",
@@ -43,17 +42,17 @@ const browserRouterObj = createBrowserRouter([
         children: [
           {
             path: "articles",
-            element: <Articles />
+            element: <Articles />,
           },
           {
-            path: ":articleId",
-            element: <ArticleByID />
+            path: ":articleid",
+            element: <ArticleById />,
           },
           {
             path: "",
-            element: <Navigate to="articles" />
-          }
-        ]
+            element: <Navigate to="articles" />,
+          },
+        ],
       },
       {
         path: "author-profile/:email",
@@ -61,55 +60,35 @@ const browserRouterObj = createBrowserRouter([
         children: [
           {
             path: "articles",
-            element: <Articles />
+            element: <Articles />,
           },
           {
-            path: ":articleId",
-            element: <ArticleByID />
+            path: ":articleid",
+            element: <ArticleById />,
           },
           {
-            path: 'article',
-            element: <PostArticle />
-          },
-          {
-            path: "",
-            element: <Navigate to="articles" />
-          }
-        ]
-      },
-      {
-        path: "admin-profile/:email",
-        element: <AdminProfile />,
-        children: [
-          {
-            path: "users",
-            element: <UserList />,
+            path: "article",
+            element: <PostArticle />,
           },
           {
             path: "",
-            element: <UserList />,
+            element: <Navigate to="articles" />,
           },
         ],
       },
-    ]
-  }
-],{
-  future: {
-    v7_relativeSplatPath: true,
+      {
+        path: "*",
+        element: <Navigate to="/" />, // Fallback route
+      },
+    ],
   },
-})
+]);
 
-createRoot(document.getElementById('root')).render(
+const root = createRoot(document.getElementById("root"));
+root.render(
   <StrictMode>
-    <AdminContext>
-      <UserAuthorContext>
-        <RouterProvider
-          router={browserRouterObj}
-          future={{
-            v7_startTransition: true,
-          }}
-        />
-      </UserAuthorContext>
-    </AdminContext>
-  </StrictMode>,
-) 
+    <UserAuthorProvider> {/* ✅ Capitalized context provider */}
+      <RouterProvider router={browserRouterObj} />
+    </UserAuthorProvider>
+  </StrictMode>
+);

@@ -1,12 +1,12 @@
 import React from 'react'
-import {SignUp} from '@clerk/clerk-react'
+import { SignUp } from '@clerk/clerk-react'
 
 function Signup() {
   return (
-    <div className='d-flex justify-content-center align-items-center h-100'>
+    <div className='d-flex text-align-center justify-content-center align-items-center signup-page'>
       <SignUp />
     </div>
   )
 }
 
-export default Signup 
+export default Signup

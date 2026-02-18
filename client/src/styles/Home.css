@@ -1,0 +1,63 @@
+.home-page {
+  background: #f5f7fb;
+  min-height: calc(100vh - 140px); /* header + footer space */
+}
+
+/* Hero (when not signed in) */
+.home-hero {
+  border-radius: 1.1rem;
+}
+
+.home-hero h2 {
+  font-weight: 600;
+}
+
+.home-hero p {
+  font-size: 0.95rem;
+}
+
+/* Signed-in card */
+.home-card {
+  border-radius: 1.1rem;
+  background-color: #ffffff;
+}
+
+/* User avatar */
+.user-image-home {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(25, 118, 210, 0.5);
+}
+
+/* Role options */
+.role-option {
+  border-radius: 0.9rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.role-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.15);
+  background-color: #f8fafc;
+}
+
+.role-option input[type="radio"] {
+  transform: scale(1.1);
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .home-card,
+  .home-hero {
+    padding: 1.5rem !important;
+  }
+
+  .user-image-home {
+    width: 52px;
+    height: 52px;
+  }
+}

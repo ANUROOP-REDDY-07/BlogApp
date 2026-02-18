@@ -1,35 +1,30 @@
-const UserAuthor = require("../models/userAuthorModel");
-const Admin = require("../models/adminModel");
+const userAuthor=require('../models/userAuthorModel');
 
-async function createUserOrAuthor(req, res) {
-  //business logic to create User or Author
-  //get user or author object from req
-  const newUserAuthor = req.body;
-  //find user by email id
-  const userInDb = await UserAuthor.findOne({ email: newUserAuthor.email });
-  const isAdmin = await Admin.findOne({ email: newUserAuthor.email });
-  //if user or author existed
-  if (userInDb !== null) {
-    //check with role
-    if (newUserAuthor.role === userInDb.role) {
-      res.status(200).send({ message: newUserAuthor.role, payload: userInDb });
-    } else {
-      res.status(200).send({ message: "Invalid Role" });
+async function createUserOrAuthor(req,res){
+  //business logic here
+    //get user or author object
+    const newuserauthor=req.body;
+    //find user by email id
+    const userInDb=await userAuthor.findOne({email:newuserauthor.email})
+
+    if(userInDb!==null){
+        if(newuserauthor.role===userInDb.role){
+          res.status(200).send({message:newuserauthor.role+" already exists",payload:userInDb});
+        }
+    else{
+      res.status(200).send({message:"Invalid role"});
     }
-  } else {
-    if (isAdmin !== null) {
-      res.status(200).send({ message: "Admin can't be user/author" });
-    } else {
-      let newUser = new UserAuthor(newUserAuthor);
-      let newUserorAuthorDoc = await newUser.save();
-      res
-        .status(201)
-        .send({
-          message: newUserorAuthorDoc.role,
-          payload: newUserorAuthorDoc,
-        });
-    }
+  }else{
+    //create new user or author
+    let newUser=new userAuthor(newuserauthor);
+    let newuserauthorDoc=await newUser.save();
+    res.status(201).send({message:newuserauthor.role,payload:newuserauthorDoc});
+    
   }
+
+
+
 }
 
-module.exports = createUserOrAuthor;
+
+module.exports=createUserOrAuthor;

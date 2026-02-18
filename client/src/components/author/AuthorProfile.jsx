@@ -1,36 +1,23 @@
-// 
+import React from 'react'
+import { NavLink, Outlet } from 'react-router-dom' // Fixed typo
 
-import React, { useContext } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { userAuthorContextObj } from "../../contexts/UserAuthorContext";
-
-function AuthorProfile() {
-  const { currentUser } = useContext(userAuthorContextObj);
+function authorProfile() {
   return (
-    <div className="author-profile">
-      <ul className="d-flex justify-content-around list-unstyled">
+    <div>
+      <ul className='d-flex justify-content-around list-unstyled fs-3'>
         <li className="nav-item">
-          <NavLink to="articles" className="nav-link">
-            Articles
-          </NavLink>
+          <NavLink to='articles'>Articles</NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to="article" className="nav-link">
-            Add new article
-          </NavLink>
+          <NavLink to='article'>Post Article</NavLink>
         </li>
       </ul>
-      {currentUser.isActive ? (
-        <div className="mt-5">
-          <Outlet />
-        </div>
-      ) : (
-        <p className="text-center text-danger mt-5">
-          Your account is inactive. Please contact support.
-        </p>
-      )}
+
+      <div>
+        <Outlet /> 
+      </div>
     </div>
-  );
+  )
 }
 
-export default AuthorProfile;
+export default authorProfile
