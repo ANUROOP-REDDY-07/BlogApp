@@ -1,70 +1,83 @@
 import { Container, Form, Button, Card } from "react-bootstrap";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useContext, useEffect } from "react";
 import { userAuthorContextObj } from "../../contexts/userAuthorContext.jsx";
 import { useUser } from '@clerk/clerk-react';
 
 
 function PostArticle() {
   const { register, handleSubmit, reset } = useForm();
+  const { state } = useLocation();
   const { currUserAuthor } = useContext(userAuthorContextObj);
   const navigate = useNavigate();
   const { user, isLoaded } = useUser();
 
-  async function postArticle(articleObj){
-    console.log("Article Submitted:", articleObj);
+  // pre-fill form if editing
+  useEffect(() => {
+    if (state) {
+      reset(state);
+    }
+  }, [state, reset]);
 
-    // create article as per article schema and send to db
+  async function postArticle(articleObj) {
     const authorData = {
       name: currUserAuthor?.firstName || user?.firstName || "",
-      email:
-        currUserAuthor?.email || user?.emailAddresses?.[0]?.emailAddress || "",
+      email: currUserAuthor?.email || user?.emailAddresses?.[0]?.emailAddress || "",
       profileImageUrl: currUserAuthor?.profileImageUrl || user?.imageUrl || "",
     };
 
-    // debug log to verify values
-    console.log('Computed authorData:', authorData);
-
-    // prevent posting if we still don't have an email
     if (!authorData.email) {
-      console.error('Cannot post article: author email is missing');
+      console.error('author data missing');
       return;
     }
 
     articleObj.authorData = authorData;
-      //articleid
-      articleObj.articleId=Date.now();
-
-
-      const currDate = new Date();
-      articleObj.dateOfCreation = `${currDate.getDate()}-${currDate.getMonth() + 1}-${currDate.getFullYear()} ${currDate.toLocaleTimeString("en-US", { hour12: true })}`;
-
-      articleObj.dateOfModification = `${currDate.getDate()}-${currDate.getMonth() + 1}-${currDate.getFullYear()} ${currDate.toLocaleTimeString("en-US", { hour12: true })}`;
-
-      articleObj.comments = [];
-      articleObj.isArticleActive=true;
-      
-
- 
-      console.log("Final Article Object to be sent to server:", articleObj);
 
     try {
-      const res = await axios.post("http://localhost:3000/author-api/article", articleObj);
-      if (res.status === 201 || res.status === 200) {
-        navigate(`/author-profile/${authorData.email}/articles`);
+      if (state) {
+        // update existing article
+        const modifiedArticle = {
+          ...state,
+          ...articleObj,
+          dateOfModification: new Date().toLocaleString("en-US", { hour12: true })
+        };
+        // keep original creation date and articleId
+        delete modifiedArticle._id;
+
+        const res = await axios.put(
+          `http://localhost:3000/author-api/article/${state.articleId}`,
+          modifiedArticle
+        );
+
+        if (res.status === 200) {
+          navigate(`/author-profile/${authorData.email}/articles`);
+        }
       } else {
-        console.error('Unexpected response status:', res.status);
+        // create new article
+        articleObj.articleId = Date.now();
+        articleObj.dateOfCreation = new Date().toLocaleString("en-US", { hour12: true });
+        articleObj.dateOfModification = new Date().toLocaleString("en-US", { hour12: true });
+        articleObj.comments = [];
+        articleObj.isArticleActive = true;
+
+        const res = await axios.post(
+          "http://localhost:3000/author-api/article",
+          articleObj
+        );
+
+        if (res.status === 201 || res.status === 200) {
+          navigate(`/author-profile/${authorData.email}/articles`);
+        }
       }
     } catch (error) {
-      console.error('Error posting article:', error);
+      console.error("Error saving article:", error);
     }
-    
-    } 
-  
+  }
 
-  
+
+
   return (
     <Container className="mt-5 mb-5 ">
       <Card className="shadow-lg border-0 rounded-4">
@@ -117,7 +130,7 @@ function PostArticle() {
 
             {/* Submit Button */}
             <div className="text-center">
-              <Button  type="submit"  variant="success" size="lg" className="px-5 rounded-3">
+              <Button type="submit" variant="success" size="lg" className="px-5 rounded-3">
                 Publish
               </Button>
             </div>

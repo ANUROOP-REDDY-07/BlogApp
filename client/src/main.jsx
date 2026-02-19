@@ -17,7 +17,8 @@ import AuthorProfile from "./components/author/AuthorProfile.jsx";
 import Articles from "./components/common/Articles.jsx";
 import ArticleById from "./components/common/ArticleById.jsx";
 import PostArticle from "./components/author/PostArticle.jsx";
-import { UserAuthorProvider } from "./contexts/userAuthorContext.jsx"; // ✅ Correct import (named export + capitalized)
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { UserAuthorProvider } from "./contexts/userAuthorContext.jsx";
 
 const browserRouterObj = createBrowserRouter([
   {
@@ -37,48 +38,53 @@ const browserRouterObj = createBrowserRouter([
         element: <Signup />,
       },
       {
-        path: "user-profile/:email",
-        element: <UserProfile />,
+        element: <ProtectedRoute />,
         children: [
           {
-            path: "articles",
-            element: <Articles />,
+            path: "user-profile/:email",
+            element: <UserProfile />,
+            children: [
+              {
+                path: "articles",
+                element: <Articles />,
+              },
+              {
+                path: ":articleid",
+                element: <ArticleById />,
+              },
+              {
+                path: "",
+                element: <Navigate to="articles" />,
+              },
+            ],
           },
           {
-            path: ":articleid",
-            element: <ArticleById />,
+            path: "author-profile/:email",
+            element: <AuthorProfile />,
+            children: [
+              {
+                path: "articles",
+                element: <Articles />,
+              },
+              {
+                path: ":articleid",
+                element: <ArticleById />,
+              },
+              {
+                path: "article",
+                element: <PostArticle />,
+              },
+              {
+                path: "",
+                element: <Navigate to="articles" />,
+              },
+            ],
           },
-          {
-            path: "",
-            element: <Navigate to="articles" />,
-          },
-        ],
-      },
-      {
-        path: "author-profile/:email",
-        element: <AuthorProfile />,
-        children: [
-          {
-            path: "articles",
-            element: <Articles />,
-          },
-          {
-            path: ":articleid",
-            element: <ArticleById />,
-          },
-          {
-            path: "article",
-            element: <PostArticle />,
-          },
-          {
-            path: "",
-            element: <Navigate to="articles" />,
-          },
-        ],
+        ]
       },
       {
         path: "*",
-        element: <Navigate to="/" />, // Fallback route
+        element: <Navigate to="/" />,
       },
     ],
   },
@@ -87,7 +93,7 @@ const browserRouterObj = createBrowserRouter([
 const root = createRoot(document.getElementById("root"));
 root.render(
   <StrictMode>
-    <UserAuthorProvider> {/* ✅ Capitalized context provider */}
+    <UserAuthorProvider>
       <RouterProvider router={browserRouterObj} />
     </UserAuthorProvider>
   </StrictMode>

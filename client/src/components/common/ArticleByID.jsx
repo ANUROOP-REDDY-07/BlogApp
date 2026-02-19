@@ -2,16 +2,47 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import "../../styles/ArticleById.css"; // ⬅️ adjust if your path is different
+import { useContext } from "react";
+import { userAuthorContextObj } from "../../contexts/userAuthorContext";
+import { useUser } from "@clerk/clerk-react";
+
+import CommentsSection from "./CommentsSection";
+import "../../styles/ArticleById.css";
 
 function ArticleById() {
   const params = useParams();
   const articleId = params.articleId || params.articleid;
   const navigate = useNavigate();
 
+  const { currUserAuthor } = useContext(userAuthorContextObj);
+  const { user } = useUser();
+  const currentEmail = currUserAuthor?.email || user?.emailAddresses?.[0]?.emailAddress;
+
   const [article, setArticle] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const enableEdit = () => {
+    navigate("../article", { state: article });
+  };
+
+  async function enableDelete() {
+    if (window.confirm("Are you sure you want to delete this article?")) {
+      try {
+        const modifiedArticle = { ...article, isArticleActive: false };
+        const res = await axios.put(
+          `http://localhost:3000/author-api/articles/${articleId}`,
+          modifiedArticle
+        );
+        if (res.status === 200) {
+          navigate("../articles");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Failed to delete article");
+      }
+    }
+  }
 
   async function getArticleById() {
     try {
@@ -96,8 +127,8 @@ function ArticleById() {
                       <p className="text-muted mb-0 small">
                         {article.dateOfCreation
                           ? new Date(
-                              article.dateOfCreation
-                            ).toLocaleDateString()
+                            article.dateOfCreation
+                          ).toLocaleDateString()
                           : "Date unknown"}
                       </p>
                     </div>
@@ -110,6 +141,19 @@ function ArticleById() {
                   )}
                 </div>
 
+                {
+                  currentEmail === article.authorData?.email && (
+                    <div className="d-flex justify-content-end mb-3 gap-2">
+                      <button className="btn btn-warning" onClick={enableEdit}>
+                        Edit
+                      </button>
+                      <button className="btn btn-danger" onClick={enableDelete}>
+                        Delete
+                      </button>
+                    </div>
+                  )
+                }
+
                 {/* Title */}
                 <h1 className="article-title mb-3">{article.title}</h1>
 
@@ -119,6 +163,9 @@ function ArticleById() {
                 <div className="article-content mt-4">
                   <p className="article-body-text">{article.content}</p>
                 </div>
+
+                <hr className="my-5" />
+                <CommentsSection articleId={articleId} comments={article.comments} />
               </div>
             </article>
           </div>

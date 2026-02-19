@@ -10,6 +10,9 @@ function Articles() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   async function getArticles() {
     try {
       setLoading(true);
@@ -37,6 +40,12 @@ function Articles() {
     navigate(`../${articleId}`, { relative: "path" });
   };
 
+  const filteredArticles = articles.filter((article) => {
+    const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory ? article.category === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
+
   if (loading) {
     return (
       <div className="articles-state text-center mt-5">
@@ -54,80 +63,110 @@ function Articles() {
     );
   }
 
-  if (articles.length === 0) {
-    return (
-      <div className="articles-state text-center mt-5">
-        <p className="text-muted">No articles found</p>
-      </div>
-    );
-  }
-
   return (
     <div className="articles-page py-4">
       <div className="container">
+
+        {/* Search & Filter */}
+        <div className="row mb-4 g-3">
+          <div className="col-md-8">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search articles by title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="col-md-4">
+            <select
+              className="form-select"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              <option>Technology</option>
+              <option>Artificial Intelligence</option>
+              <option>Agriculture</option>
+              <option>Civil Engineering</option>
+              <option>Mechanical</option>
+              <option>Electrical</option>
+              <option>Space & Astronomy</option>
+              <option>Robotics</option>
+              <option>Environment</option>
+              <option>Data Science</option>
+              <option>Healthcare</option>
+            </select>
+          </div>
+        </div>
+
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="mb-0">Articles</h2>
           <p className="text-muted mb-0 small">
-            {articles.length} article{articles.length !== 1 && "s"} found
+            {filteredArticles.length} article{filteredArticles.length !== 1 && "s"} found
           </p>
         </div>
 
-        <div className="row g-4">
-          {articles.map((articleObj) => (
-            <div
-              className="col-12 col-md-6 col-lg-4"
-              key={articleObj.articleId}
-            >
-              <div className="card article-card h-100">
-                <div className="card-body d-flex flex-column">
-                  {/* Author info */}
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <span className="badge bg-light text-dark article-badge">
-                      {articleObj.category || "General"}
-                    </span>
-
-                    <div className="d-flex align-items-center">
-                      {articleObj.authorData?.profileImageUrl && (
-                        <img
-                          src={articleObj.authorData.profileImageUrl}
-                          alt="author"
-                          className="article-author-img me-2"
-                        />
-                      )}
-                      <small className="text-secondary">
-                        {articleObj.authorData?.name || "Unknown Author"}
+        {filteredArticles.length === 0 ? (
+          <div className="text-center mt-5 text-muted">
+            <p>No articles match your search.</p>
+          </div>
+        ) : (
+          <div className="row g-4">
+            {filteredArticles.map((articleObj) => (
+              <div
+                className="col-12 col-md-6 col-lg-4"
+                key={articleObj.articleId}
+              >
+                <div className="article-card">
+                  <div className="article-card-body">
+                    {/* Top Meta */}
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="category-badge">
+                        {articleObj.category || "General"}
+                      </span>
+                      <small className="text-light fw-medium small">
+                        {articleObj.publishedOn ? new Date(articleObj.publishedOn).toLocaleDateString() : ""}
                       </small>
                     </div>
-                  </div>
 
-                  {/* Title & excerpt */}
-                  <h5 className="card-title article-title">
-                    {articleObj.title}
-                  </h5>
-                  <p className="card-text article-excerpt">
-                    {(articleObj.content || "").substring(0, 120) + "..."}
-                  </p>
+                    {/* Content */}
+                    <h3 className="article-title">{articleObj.title}</h3>
+                    <p className="article-excerpt">
+                      {(articleObj.content || "").substring(0, 100)}...
+                    </p>
 
-                  {/* Footer */}
-                  <div className="mt-auto d-flex justify-content-between align-items-center pt-2">
-                    <small className="text-muted">
-                      {articleObj.publishedOn
-                        ? new Date(articleObj.publishedOn).toLocaleDateString()
-                        : ""}
-                    </small>
+                    {/* Footer */}
+                    <div className="article-footer">
+                      <div className="author-group">
+                        {articleObj.authorData?.profileImageUrl && (
+                          <img
+                            src={articleObj.authorData.profileImageUrl}
+                            className="author-img"
+                            alt="Author"
+                          />
+                        )}
+                        <div className="d-flex flex-column" style={{ lineHeight: '1.1' }}>
+                          <small className="fw-bold text-dark" style={{ fontSize: '0.85rem' }}>
+                            {articleObj.authorData?.name}
+                          </small>
+                          <small className="text-light" style={{ fontSize: '0.75rem' }}>Author</small>
+                        </div>
+                      </div>
 
-                    <button
-                      className="btn article-read-btn"
-                      onClick={() => handleReadMore(articleObj.articleId)}
-                    >
-                      Read more
-                    </button>
+                      <button
+                        className="btn btn-link read-more-link text-decoration-none p-0"
+                        onClick={() => handleReadMore(articleObj.articleId)}
+                      >
+                        Read <span className="fs-5">→</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

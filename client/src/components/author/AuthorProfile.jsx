@@ -1,23 +1,39 @@
-import React from 'react'
-import { NavLink, Outlet } from 'react-router-dom' // Fixed typo
+import React from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
 
-function authorProfile() {
+function AuthorProfile() {
   return (
-    <div>
-      <ul className='d-flex justify-content-around list-unstyled fs-3'>
+    <div className="author-profile p-3">
+      {/* Navigation */}
+      <ul className="nav justify-content-center mb-4 glass-effect p-3 rounded-pill gap-4 d-inline-flex mx-auto position-relative start-50 translate-middle-x">
         <li className="nav-item">
-          <NavLink to='articles'>Articles</NavLink>
+          <NavLink
+            to='articles'
+            className={({ isActive }) =>
+              `nav-link fs-5 px-4 rounded-pill transition-all ${isActive ? 'bg-primary text-white shadow' : 'text-muted hover-text-primary'}`
+            }
+          >
+            My Articles
+          </NavLink>
         </li>
         <li className="nav-item">
-          <NavLink to='article'>Post Article</NavLink>
+          <NavLink
+            to='article'
+            className={({ isActive }) =>
+              `nav-link fs-5 px-4 rounded-pill transition-all ${isActive ? 'bg-primary text-white shadow' : 'text-muted hover-text-primary'}`
+            }
+          >
+            Post New
+          </NavLink>
         </li>
       </ul>
 
-      <div>
-        <Outlet /> 
+      {/* Content Area */}
+      <div className="mt-4">
+        <Outlet />
       </div>
     </div>
   )
 }
 
-export default authorProfile
+export default AuthorProfile;

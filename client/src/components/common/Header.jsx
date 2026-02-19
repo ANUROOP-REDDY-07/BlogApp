@@ -1,16 +1,15 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useClerk, useUser } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
+import { Navbar, Container, Nav, Button, Image } from "react-bootstrap";
 import { userAuthorContextObj } from "../../contexts/userAuthorContext.jsx";
-
-import "../../styles/Header.css"; 
+import "../../styles/Header.css";
 
 function Header() {
   const { signOut } = useClerk();
   const { currUserAuthor, setCurrUserAuthor } = useContext(userAuthorContextObj);
   const navigate = useNavigate();
-  const { isSignedIn, user, isLoaded } = useUser();
+  const { isSignedIn, user } = useUser();
 
   async function handleSignOut() {
     await signOut();
@@ -18,70 +17,73 @@ function Header() {
     navigate("/");
   }
 
-  return (
-    <header>
-      <nav className="navbar navbar-dark bg-dark header-navbar shadow-sm">
-        <div className="container d-flex justify-content-between align-items-center">
-          {/* Brand / Logo */}
-          <Link to="/" className="navbar-brand d-flex align-items-center">
-            <div className="brand-logo d-flex align-items-center justify-content-center me-2">
-              {/* You can replace this text with an actual logo image if you have one */}
-              <span>A</span>
-            </div>
-            <span className="brand-text">AuthorHub</span>
-          </Link>
+  const handleProfileClick = () => {
+    const role = currUserAuthor?.role || 'user';
+    const email = user?.emailAddresses?.[0]?.emailAddress;
+    navigate(`/${role === 'author' ? 'author' : 'user'}-profile/${email}`);
+  }
 
-          {/* Links / User section */}
-          <ul className="nav header-links mb-0 d-flex align-items-center">
+  return (
+    <Navbar expand="lg" className="header-glass sticky-top py-3 mb-5" variant="light">
+      <Container>
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center fs-3">
+          <span className="brand-text">AuthorHub</span>
+        </Navbar.Brand>
+
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ms-auto align-items-center gap-4">
             {!isSignedIn ? (
               <>
-                <li className="nav-item">
-                  <Link to="/" className="nav-link">
-                    Home
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/signin" className="nav-link">
-                    Sign In
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/signup" className="nav-link btn btn-outline-light ms-2 px-3">
-                    Sign Up
-                  </Link>
-                </li>
+                <Nav.Link as={Link} to="/" className="fw-semibold text-dark">Home</Nav.Link>
+                <Nav.Link as={Link} to="/signin" className="fw-semibold text-dark">Sign In</Nav.Link>
+                <Link to="/signup">
+                  <Button variant="primary" className="px-4">Get Started</Button>
+                </Link>
               </>
             ) : (
-              <li className="nav-item">
-                <div className="d-flex align-items-center gap-3 user-info">
-                  <img
-                    className="user-image"
-                    src={user?.imageUrl}
-                    alt={user?.firstName || "User"}
-                  />
-                  <div className="d-flex flex-column">
-                    <span className="user-name">
-                      {user?.firstName} {user?.lastName}
-                    </span>
-                    {currUserAuthor && (
-                      <span className="user-role text-muted">
-                        {currUserAuthor.role || "Author"}
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    className="btn btn-outline-light btn-sm"
+              <>
+                <Nav className="d-flex gap-3 me-3">
+                  <Nav.Link as={Link} to="/" className="fw-medium text-dark">Home</Nav.Link>
+                  <Nav.Link as={Link} to={`/${currUserAuthor?.role === 'author' ? 'author' : 'user'}-profile/${user?.emailAddresses?.[0]?.emailAddress}/articles`} className="fw-medium text-dark">Articles</Nav.Link>
+                </Nav>
+
+                <div className="d-flex align-items-center gap-3 ps-3 border-start border-2">
+                  <Button
+                    variant="outline-dark"
+                    size="sm"
                     onClick={handleSignOut}
+                    className="rounded-pill px-3"
                   >
                     Sign Out
-                  </button>
+                  </Button>
+
+                  <div
+                    className="d-flex align-items-center gap-2 cursor-pointer profile-pill p-1 pe-3 rounded-pill hover-bg-light transition-all"
+                    onClick={handleProfileClick}
+                    title="Go to Dashboard"
+                    style={{ border: '1px solid transparent', transition: 'all 0.2s' }}
+                  >
+                    <Image
+                      src={user?.imageUrl}
+                      roundedCircle
+                      style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                      className="border border-2 border-white shadow-sm"
+                      alt="Profile"
+                    />
+                    <div className="d-none d-lg-block lh-1 text-start">
+                      <div className="fw-bold text-dark small">{user?.firstName}</div>
+                      <div className="text-muted" style={{ fontSize: '0.7rem' }}>{currUserAuthor?.role}</div>
+                    </div>
+                  </div>
                 </div>
-              </li>
+              </>
             )}
-          </ul>
-        </div>
-      </nav>
-    </header>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
 
